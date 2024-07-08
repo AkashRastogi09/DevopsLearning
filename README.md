@@ -16,6 +16,7 @@ Welcome to my DevOps learning repository!
 - Terraform Projects
 - Grafana Projects
 - AWS Projects
+- Devops Projects
 
 ## Connect with Me
 - Let's connect and learn together! [https://github.com/AkashRastogi09/AkashRastogi09]
