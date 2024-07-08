@@ -11,3 +11,5 @@ then
 else
 	echo "you are minor"
 fi
+
+#done
