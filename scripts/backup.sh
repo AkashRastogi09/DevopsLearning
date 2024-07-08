@@ -1,25 +1,11 @@
 #!/bin/bash
 
-# I am creating script for backing up client data
 
-#SRC location path
+mkdir test_backup
 
-SCR_DIR=/etc/
+touch /home/ubuntu/test_backup/akash{2..100}.txt
 
-#DEST_DIR location path
+cp  -r test_backup /home/ubuntu/Desktop
 
-DEST_DIR=/client_backup/
 
-# create time stamp for unique backup name
 
-time_stamp="$(date +"%Y-%m-%d-%H-%M-%S")"
-
-echo $time_stamp
-
-filename="Backup_$time_stamp.tar.gz"
-
-tar -czvf ${DEST_DIR}/${filename} /$SCR_DIR
-
-echo "Backup has been completed"
-
-#
