@@ -42,9 +42,70 @@ function userdelete {
 
 # Function to modify a user
 function usermodify {
-    echo "Modify user functionality is under development."
-    # Add your modification logic here if needed
+    echo "Modify User Options:"
+    echo "1) Change Home Directory"
+    echo "2) Change Default Shell"
+    echo "3) Add User to a Group"
+    echo "4) Lock User Account"
+    echo "5) Unlock User Account"
+    echo "6) Rename User"
+    echo "7) Rename Computer Hostname"
+    echo "8) Exit"
+
+    read -rp "Enter your choice: " modify_choice
+
+    case $modify_choice in
+        1)
+            read -rp "Enter the username: " username
+            read -rp "Enter the new home directory: " new_home
+            sudo usermod -d "$new_home" -m "$username"
+            echo "Home directory updated successfully."
+            ;;
+        2)
+            read -rp "Enter the username: " username
+            read -rp "Enter the new shell (e.g., /bin/bash): " new_shell
+            sudo usermod -s "$new_shell" "$username"
+            echo "Default shell updated successfully."
+            ;;
+        3)
+            read -rp "Enter the username: " username
+            read -rp "Enter the group to add the user to: " group
+            sudo usermod -aG "$group" "$username"
+            echo "User added to group successfully."
+            ;;
+        4)
+            read -rp "Enter the username to lock: " username
+            sudo usermod -L "$username"
+            echo "User account locked successfully."
+            ;;
+        5)
+            read -rp "Enter the username to unlock: " username
+            sudo usermod -U "$username"
+            echo "User account unlocked successfully."
+            ;;
+        6)
+            read -rp "Enter the current username: " old_username
+            read -rp "Enter the new username: " new_username
+            sudo usermod -l "$new_username" "$old_username"
+            echo "Username updated successfully."
+	    ;;
+
+    	7) 
+	   read -rp "Enter the new Hostname: " new_hostname
+	  
+	   sudo hostnamectl set-hostname $new_hostname
+	  echo "Hostname updated successfully."
+	   ;;
+
+      	8)  
+       	   echo "Exiting user modification."
+            ;;
+        *)
+            echo "Invalid choice. Please try again."
+            ;;
+    esac
 }
+
 
 while true; do
     echo -e "\nSelect an option:"
