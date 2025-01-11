@@ -59,43 +59,87 @@ function usermodify {
             read -rp "Enter the username: " username
             read -rp "Enter the new home directory: " new_home
             sudo usermod -d "$new_home" -m "$username"
-            echo "Home directory updated successfully."
+if [ $? -eq 0 ]; then
+        echo "Home directory updated successfully."
+    else
+        echo "Home directory Not updated successfully.."
+ fi
             ;;
+
+
         2)
             read -rp "Enter the username: " username
             read -rp "Enter the new shell (e.g., /bin/bash): " new_shell
             sudo usermod -s "$new_shell" "$username"
-            echo "Default shell updated successfully."
+
+if [ $? -eq 0 ]; then
+        echo "Default shell updated successfully."
+    else
+        echo "Default shell Not updated successfully"
+ fi
             ;;
+
+
         3)
             read -rp "Enter the username: " username
             read -rp "Enter the group to add the user to: " group
             sudo usermod -aG "$group" "$username"
-            echo "User added to group successfully."
+if [ $? -eq 0 ]; then
+        echo "User added to group successfully."
+    else
+        echo "User added to Not group successfully."
+ fi
             ;;
+
+
         4)
             read -rp "Enter the username to lock: " username
             sudo usermod -L "$username"
-            echo "User account locked successfully."
+if [ $? -eq 0 ]; then
+        echo "User account locked successfully."
+    else
+        echo "User account Not locked successfully."
+ fi
             ;;
+
+
         5)
             read -rp "Enter the username to unlock: " username
             sudo usermod -U "$username"
-            echo "User account unlocked successfully."
+if [ $? -eq 0 ]; then
+        echo "User account unlocked successfully."
+    else
+        echo "User account Not unlocked successfully."
+ fi
             ;;
+
+
         6)
             read -rp "Enter the current username: " old_username
             read -rp "Enter the new username: " new_username
             sudo usermod -l "$new_username" "$old_username"
-            echo "Username updated successfully."
+if [ $? -eq 0 ]; then
+        echo "Username updated successfully."
+    else
+        echo "Username Not updated successfully."
+ fi
+
 	    ;;
+
+
 
     	7) 
 	   read -rp "Enter the new Hostname: " new_hostname
 	  
 	   sudo hostnamectl set-hostname $new_hostname
-	  echo "Hostname updated successfully."
+if [ $? -eq 0 ]; then
+        echo "Hostname updated successfully."
+    else
+        echo "Hostname Not updated successfully."
+ fi
 	   ;;
+
+
 
       	8)  
        	   echo "Exiting user modification."
@@ -104,7 +148,70 @@ function usermodify {
             echo "Invalid choice. Please try again."
             ;;
     esac
+
+
+function Joindomain {
+
+    : '
+    Disclaimer:
+    This function is created for adding a system to a domain.
+    Please perform this carefully as it is a critical operation.
+    '
+
+    echo "---------------------------------------------------------------"
+    echo "Prerequisites for joining a domain:"
+    echo "1. Your domain FQDN should be discoverable on your connected network."
+    echo "2. Your system should be connected to the internet."
+    echo "3. Your system hostname should be correct."
+    echo "---------------------------------------------------------------"
+
+    # Step 1: Rename the system hostname
+    echo "Step 1: Rename the system hostname"
+    read -rp "Enter the new hostname: " new_hostname
+    sudo hostnamectl set-hostname "$new_hostname"
+    echo "Hostname has been updated to $new_hostname."
+
+    # Step 2: Install necessary packages
+    echo "Step 2: Installing necessary packages..."
+    sudo apt-get update
+    sudo apt-get -y install realmd libnss-sss libpam-sss sssd sssd-tools adcli samba-common-bin oddjob oddjob-mkhomedir packagekit
+
+    if [ $? -eq 0 ]; then
+        echo "All required packages have been installed successfully."
+    else
+        echo "Failed to install required packages. Please check your internet connection or package manager."
+        return 1
+    fi
+
+    # Step 3: Discover the domain
+    echo "Step 3: Discovering the domain..."
+    read -rp "Enter your FQDN domain name: " domain_name
+    sudo realm discover "$domain_name"
+
+    if [ $? -eq 0 ]; then
+        echo "Domain $domain_name has been discovered successfully."
+    else
+        echo "Failed to discover domain $domain_name. Please check the domain name or network connection."
+        return 1
+    fi
+
+    # Step 4: Join the domain
+    echo "Step 4: Joining the domain..."
+    read -rp "Enter your Domain Admin username: " domain_admin
+    sudo realm join -U "$domain_admin" "$domain_name"
+
+    if [ $? -eq 0 ]; then
+        echo "System has been successfully joined to the domain $domain_name."
+    else
+        echo "Failed to join the domain. Please check the credentials or network settings."
+        return 1
+    fi
+
 }
+
+
+
+
 
 
 while true; do
@@ -112,6 +219,7 @@ while true; do
     echo "C) Create User"
     echo "M) Modify User"
     echo "D) Delete User"
+    echo "J) Domain Join"
     echo "Q) Quit"
 
     read -rp "Enter your choice: " choice
@@ -129,6 +237,10 @@ while true; do
             echo "Welcome to User Management: Modify User"
             usermodify
             ;;
+	J|j)
+	    echo "Welcome to User Management: Join Domain"
+	    Joindomain
+	    ;;
         Q|q)
             echo "Exiting... Goodbye!"
             break
